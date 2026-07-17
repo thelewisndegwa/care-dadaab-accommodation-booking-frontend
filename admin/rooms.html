@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rooms · CARE Kenya Dadaab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;650;700;750&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <aside class="admin-sidebar" data-admin-sidebar>
+      <a class="brand" href="dashboard.html">
+        <img class="brand-logo" src="../assets/care-logo.png" alt="" aria-hidden="true">
+        <span class="brand-text">
+          <strong>CARE Kenya</strong>
+          <span>Admin</span>
+        </span>
+      </a>
+      <nav class="admin-nav" aria-label="Admin">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="bookings.html">Bookings</a>
+        <a href="rooms.html" aria-current="page" data-super-admin-only>Rooms</a>
+        <a href="rates.html" data-super-admin-only>Rates</a>
+        <a href="users.html" data-super-admin-only>Users</a>
+        <a href="settings.html" data-super-admin-only>Settings</a>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <button type="button" class="btn btn-secondary btn-sm admin-menu-toggle" data-admin-menu-toggle>Menu</button>
+        <h1 style="font-size:var(--text-lg);margin:0;">Rooms</h1>
+        <div class="admin-user">
+          <div class="admin-user-meta">
+            <strong data-admin-name>—</strong>
+            <span data-admin-role></span>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" data-logout>Sign out</button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <div class="toolbar" style="justify-content:space-between;align-items:center;">
+          <p class="mb-0 text-muted">Manage facility rooms by block, number, capacity, and status.</p>
+          <button type="button" class="btn btn-primary" id="add-room-btn">Add Room</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" aria-label="Rooms">
+            <thead>
+              <tr>
+                <th>Block</th>
+                <th>Room Number</th>
+                <th>Capacity</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rooms-table-body">
+              <tr><td colspan="5" class="empty-state">Loading rooms…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" data-modal="room" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="room-modal-title">
+      <div class="modal-header">
+        <h2 id="room-modal-title">Add Room</h2>
+        <button type="button" class="modal-close" data-close-modal="room" aria-label="Close">&times;</button>
+      </div>
+      <form id="room-form">
+        <div class="modal-body">
+          <input type="hidden" id="room-id" name="id">
+          <div class="form-grid two-col">
+            <div class="form-group">
+              <label class="form-label" for="block">Block <span class="required" aria-hidden="true">*</span></label>
+              <input class="form-control" type="text" id="block" name="block" placeholder="e.g. A" required>
+              <span class="form-error" data-error-for="block"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="roomNumber">Room Number <span class="required" aria-hidden="true">*</span></label>
+              <input class="form-control" type="text" id="roomNumber" name="roomNumber" placeholder="e.g. 15" required>
+              <span class="form-error" data-error-for="roomNumber"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="capacity">Capacity <span class="required" aria-hidden="true">*</span></label>
+              <input class="form-control" type="number" id="capacity" name="capacity" min="1" required>
+              <span class="form-error" data-error-for="capacity"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="status">Status <span class="required" aria-hidden="true">*</span></label>
+              <select class="form-control" id="status" name="status" required></select>
+              <span class="form-error" data-error-for="status"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="room">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="room-submit">Save Room</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" data-modal="confirm" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h2 data-confirm-title>Confirm</h2>
+        <button type="button" class="modal-close" data-close-modal="confirm" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body"><p data-confirm-message class="mb-0"></p></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-confirm-cancel data-close-modal="confirm">Cancel</button>
+        <button type="button" class="btn btn-primary" data-confirm-accept>Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/pages/admin-rooms.js"></script>
+</body>
+</html>

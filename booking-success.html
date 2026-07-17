@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Submitted · CARE Kenya Dadaab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;650;700;750&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container site-header-inner">
+      <a class="brand" href="index.html">
+        <img class="brand-logo" src="assets/care-logo.png" alt="" aria-hidden="true">
+        <span class="brand-text">
+          <strong>CARE Kenya</strong>
+          <span>Dadaab Accommodation</span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="nav" id="site-nav" data-nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="booking.html">Book Accommodation</a>
+        <a href="track-booking.html">Track Booking</a>
+        <a href="terms.html">Terms</a>
+        <a href="admin/login.html">Staff Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <div class="container">
+      <div class="panel text-center" style="max-width: 640px; margin-inline: auto;">
+        <div class="panel-header">
+          <h1>Booking Submitted Successfully</h1>
+          <p>Your accommodation request has been received and is pending review.</p>
+        </div>
+
+        <div class="reference-box">
+          <span class="text-muted" style="width:100%;font-size:var(--text-sm);font-weight:600;">Booking Reference</span>
+          <span class="reference-value" id="booking-reference">—</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="copy-reference">Copy Reference</button>
+        </div>
+
+        <div class="alert alert-warning text-center">
+          <p><strong>Please save this Booking Reference.</strong></p>
+          <p>You will need it to:</p>
+          <ul style="display:inline-block;text-align:left;margin-bottom:0;">
+            <li>Track your booking</li>
+            <li>Contact CARE</li>
+            <li>Request cancellation</li>
+          </ul>
+        </div>
+
+        <p class="text-muted">A confirmation email has been sent with your booking details.</p>
+
+        <div class="form-actions" style="justify-content:center;">
+          <a class="btn btn-primary" id="track-booking-link" href="track-booking.html">Track Booking</a>
+          <a class="btn btn-secondary" href="index.html">Return Home</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <p class="mb-0">© CARE Kenya · Dadaab Accommodation Booking</p>
+      <p class="mb-0"><a href="terms.html">Terms &amp; Conditions</a></p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/pages/booking-success.js"></script>
+</body>
+</html>

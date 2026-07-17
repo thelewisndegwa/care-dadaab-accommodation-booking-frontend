@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rates · CARE Kenya Dadaab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;650;700;750&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <aside class="admin-sidebar" data-admin-sidebar>
+      <a class="brand" href="dashboard.html">
+        <img class="brand-logo" src="../assets/care-logo.png" alt="" aria-hidden="true">
+        <span class="brand-text">
+          <strong>CARE Kenya</strong>
+          <span>Admin</span>
+        </span>
+      </a>
+      <nav class="admin-nav" aria-label="Admin">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="bookings.html">Bookings</a>
+        <a href="rooms.html" data-super-admin-only>Rooms</a>
+        <a href="rates.html" aria-current="page" data-super-admin-only>Rates</a>
+        <a href="users.html" data-super-admin-only>Users</a>
+        <a href="settings.html" data-super-admin-only>Settings</a>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <button type="button" class="btn btn-secondary btn-sm admin-menu-toggle" data-admin-menu-toggle>Menu</button>
+        <h1 style="font-size:var(--text-lg);margin:0;">Rates</h1>
+        <div class="admin-user">
+          <div class="admin-user-meta">
+            <strong data-admin-name>—</strong>
+            <span data-admin-role></span>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" data-logout>Sign out</button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <div class="page-header">
+          <h2 style="font-size:var(--text-xl);">Accommodation Rates</h2>
+          <p>Nightly rates are configurable. Only Super Admins can modify rates. Payments are not processed in Version 1.</p>
+        </div>
+
+        <div class="panel" style="max-width:560px;">
+          <form id="rates-form" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="currency">Currency</label>
+                <input class="form-control" type="text" id="currency" name="currency" value="KES" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="nightlyRate">Nightly Rate <span class="required" aria-hidden="true">*</span></label>
+                <input class="form-control" type="number" id="nightlyRate" name="nightlyRate" min="0" step="1" required>
+                <span class="form-error" data-error-for="nightlyRate"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="notes">Notes</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Optional rate notes"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="rates-submit">Save Rates</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/pages/admin-rates.js"></script>
+</body>
+</html>
