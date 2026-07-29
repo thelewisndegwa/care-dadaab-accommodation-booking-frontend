@@ -55,13 +55,3 @@ export function requireAuth({ superAdmin = false } = {}) {
 
   return user;
 }
-
-export function saveLastBookingReference(reference) {
-  if (reference) {
-    sessionStorage.setItem(config.BOOKING_REF_KEY, reference);
-  }
-}
-
-export function getLastBookingReference() {
-  return sessionStorage.getItem(config.BOOKING_REF_KEY);
-}

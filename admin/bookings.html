@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bookings · CARE Kenya Dadaab</title>
+  <title>Bookings · CAMS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;650;700;750&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,176 +16,74 @@
   <div class="admin-shell">
     <aside class="admin-sidebar" data-admin-sidebar>
       <a class="brand" href="dashboard.html">
-        <img class="brand-logo" src="../assets/care-logo.png" alt="" aria-hidden="true">
-        <span class="brand-text">
-          <strong>CARE Kenya</strong>
-          <span>Admin</span>
-        </span>
+        <img class="brand-logo" src="/assets/care-logo.jpg" alt="" aria-hidden="true">
+        <span class="brand-text"><strong>CARE Kenya</strong><span data-brand-subtitle>CAMS</span></span>
       </a>
-      <nav class="admin-nav" aria-label="Admin">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="bookings.html" aria-current="page">Bookings</a>
-        <a href="rooms.html" data-super-admin-only>Rooms</a>
-        <a href="rates.html" data-super-admin-only>Rates</a>
-        <a href="users.html" data-super-admin-only>Users</a>
-        <a href="settings.html" data-super-admin-only>Settings</a>
-      </nav>
+      <nav class="admin-nav" data-admin-nav aria-label="Admin"></nav>
     </aside>
-
     <div class="admin-main">
       <header class="admin-topbar">
         <button type="button" class="btn btn-secondary btn-sm admin-menu-toggle" data-admin-menu-toggle>Menu</button>
         <h1 style="font-size:var(--text-lg);margin:0;">Bookings</h1>
         <div class="admin-user">
-          <div class="admin-user-meta">
-            <strong data-admin-name>—</strong>
-            <span data-admin-role></span>
-          </div>
+          <div class="admin-user-meta"><strong data-admin-name>—</strong><span data-admin-role></span></div>
           <button type="button" class="btn btn-ghost btn-sm" data-logout>Sign out</button>
         </div>
       </header>
-
       <div class="admin-content">
-        <form class="toolbar" id="bookings-filters">
-          <div class="form-group search">
-            <label class="form-label" for="search">Search</label>
-            <input class="form-control" type="search" id="search" name="search" placeholder="Reference, name, email, organisation">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="status">Status</label>
-            <select class="form-control" id="status" name="status"></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="sort">Sort</label>
-            <select class="form-control" id="sort" name="sort">
-              <option value="createdAt:desc">Newest first</option>
-              <option value="createdAt:asc">Oldest first</option>
-              <option value="arrivalDate:asc">Arrival (soonest)</option>
-              <option value="arrivalDate:desc">Arrival (latest)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" style="opacity:0;">Apply</label>
-            <button class="btn btn-primary" type="submit">Apply</button>
-          </div>
-        </form>
-
+        <div class="toolbar" style="justify-content:space-between;align-items:flex-end;">
+          <form class="toolbar" id="bookings-filters" style="flex:1;">
+            <div class="form-group search">
+              <label class="form-label" for="search">Search</label>
+              <input class="form-control" type="search" id="search" name="search" placeholder="Reference, name, email, organisation">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="status">Status</label>
+              <select class="form-control" id="status" name="status"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="campId">Camp</label>
+              <select class="form-control" id="campId" name="campId"><option value="">All camps</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sort">Sort</label>
+              <select class="form-control" id="sort" name="sort">
+                <option value="createdAt:desc">Newest first</option>
+                <option value="createdAt:asc">Oldest first</option>
+                <option value="arrivalDate:asc">Arrival (soonest)</option>
+                <option value="arrivalDate:desc">Arrival (latest)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="opacity:0;">Apply</label>
+              <button class="btn btn-primary" type="submit">Apply</button>
+            </div>
+          </form>
+          <a class="btn btn-primary" href="booking-create.html" style="margin-left:var(--space-4);">Create Booking</a>
+        </div>
         <div class="table-wrap">
           <table class="table" aria-label="Bookings">
             <thead>
               <tr>
                 <th>Reference</th>
                 <th>Guest</th>
+                <th>Camp</th>
                 <th>Arrival</th>
                 <th>Departure</th>
+                <th>Stay Type</th>
                 <th>Status</th>
                 <th>Room</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="bookings-table-body">
-              <tr><td colspan="7" class="empty-state">Loading bookings…</td></tr>
+              <tr><td colspan="8" class="empty-state">Loading bookings…</td></tr>
             </tbody>
           </table>
         </div>
-
         <div id="bookings-pagination"></div>
       </div>
     </div>
   </div>
-
-  <!-- View details modal -->
-  <div class="modal-backdrop" data-modal="details" hidden>
-    <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="details-title">
-      <div class="modal-header">
-        <h2 id="details-title">Booking Details</h2>
-        <button type="button" class="modal-close" data-close-modal="details" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <dl class="detail-list" id="details-list"></dl>
-        <div id="details-timeline" style="margin-top:var(--space-6);"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-close-modal="details">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Approve + assign room modal -->
-  <div class="modal-backdrop" data-modal="approve" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="approve-title">
-      <div class="modal-header">
-        <h2 id="approve-title">Approve &amp; Assign Room</h2>
-        <button type="button" class="modal-close" data-close-modal="approve" aria-label="Close">&times;</button>
-      </div>
-      <form id="approve-form">
-        <div class="modal-body">
-          <p id="approve-guest-summary" class="text-muted"></p>
-          <input type="hidden" id="approve-booking-id" name="bookingId">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label" for="approve-block">Block <span class="required" aria-hidden="true">*</span></label>
-              <select class="form-control" id="approve-block" name="block" required></select>
-              <span class="form-error" data-error-for="block"></span>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="approve-room">Room <span class="required" aria-hidden="true">*</span></label>
-              <select class="form-control" id="approve-room" name="roomId" required disabled>
-                <option value="">Select block first</option>
-              </select>
-              <span class="form-error" data-error-for="roomId"></span>
-            </div>
-          </div>
-          <div id="approve-error" class="alert alert-danger" hidden></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-close-modal="approve">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="approve-submit">Approve</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Reject modal -->
-  <div class="modal-backdrop" data-modal="reject" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reject-title">
-      <div class="modal-header">
-        <h2 id="reject-title">Reject Booking</h2>
-        <button type="button" class="modal-close" data-close-modal="reject" aria-label="Close">&times;</button>
-      </div>
-      <form id="reject-form">
-        <div class="modal-body">
-          <input type="hidden" id="reject-booking-id" name="bookingId">
-          <div class="form-group">
-            <label class="form-label" for="reject-reason">Reason (optional)</label>
-            <textarea class="form-control" id="reject-reason" name="reason" rows="3"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-close-modal="reject">Cancel</button>
-          <button type="submit" class="btn btn-danger" id="reject-submit">Reject</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Generic confirm modal -->
-  <div class="modal-backdrop" data-modal="confirm" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-      <div class="modal-header">
-        <h2 id="confirm-title" data-confirm-title>Confirm</h2>
-        <button type="button" class="modal-close" data-close-modal="confirm" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p data-confirm-message class="mb-0"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-confirm-cancel data-close-modal="confirm">Cancel</button>
-        <button type="button" class="btn btn-primary" data-confirm-accept>Confirm</button>
-      </div>
-    </div>
-  </div>
-
   <script type="module" src="../js/pages/admin-bookings.js"></script>
 </body>
 </html>

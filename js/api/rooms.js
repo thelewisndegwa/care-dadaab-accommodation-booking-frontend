@@ -20,11 +20,10 @@ export function deleteRoom(id) {
   return api.delete(`/rooms/${id}`);
 }
 
-/** Rooms available for assignment during a date range. */
-export function listAvailableRooms(params = {}) {
-  return api.get('/rooms/available', { query: params });
+export function reactivateRoom(id) {
+  return api.put(`/rooms/${id}`, { isActive: true });
 }
 
-export function listBlocks() {
-  return api.get('/rooms/blocks');
+export function listAvailableRooms(params = {}) {
+  return api.get('/rooms/available', { query: params });
 }

@@ -50,16 +50,16 @@ export function escapeHtml(value) {
 
 export function statusBadgeClass(status) {
   const map = {
-    'Pending Review': 'badge-pending',
-    Approved: 'badge-approved',
-    Rejected: 'badge-rejected',
-    'Cancellation Requested': 'badge-cancellation',
+    Booked: 'badge-approved',
     Cancelled: 'badge-cancelled',
     'Checked In': 'badge-checked-in',
     'Checked Out': 'badge-checked-out',
     Available: 'badge-available',
-    Occupied: 'badge-occupied',
     Maintenance: 'badge-maintenance',
+    Outstanding: 'badge-pending',
+    Unpaid: 'badge-pending',
+    Paid: 'badge-approved',
+    Waived: 'badge-checked-out',
   };
   return map[status] || 'badge-cancelled';
 }
@@ -69,14 +69,32 @@ export function statusBadge(status) {
   return `<span class="badge ${statusBadgeClass(status)}">${escapeHtml(status)}</span>`;
 }
 
-export function roomLabel(room) {
-  if (!room) return '—';
-  if (typeof room === 'string') return room;
-  const block = room.block || '';
-  const number = room.roomNumber ?? room.number ?? '';
-  if (block && number !== '') return `Block ${block} · Room ${number}`;
-  if (number !== '') return `Room ${number}`;
-  return block || '—';
+export function campLabel(camp) {
+  if (!camp) return '—';
+  if (typeof camp === 'string') return camp;
+  return camp.name || camp.campName || '—';
+}
+
+export function roomLabel(room, booking) {
+  if (!room && !booking) return '—';
+  const source = room || booking;
+  if (typeof source === 'string') return source;
+
+  const camp = campLabel(source.camp || booking?.camp || booking?.campName);
+  const block =
+    source.block?.name
+    || source.blockName
+    || source.block
+    || booking?.blockName
+    || booking?.block?.name;
+  const number = source.roomNumber ?? source.number ?? booking?.roomNumber;
+
+  const parts = [];
+  if (camp && camp !== '—') parts.push(camp);
+  if (block) parts.push(`Block ${block}`);
+  if (number !== undefined && number !== '') parts.push(`Room ${number}`);
+
+  return parts.length ? parts.join(' · ') : '—';
 }
 
 export function fullName(person) {
@@ -88,4 +106,19 @@ export function yesNo(value) {
   if (value === true || value === 'true' || value === 'Yes') return 'Yes';
   if (value === false || value === 'false' || value === 'No') return 'No';
   return value ? String(value) : '—';
+}
+
+export function nightsBetween(arrivalDate, departureDate) {
+  const arrival = new Date(arrivalDate);
+  const departure = new Date(departureDate);
+  if (Number.isNaN(arrival.getTime()) || Number.isNaN(departure.getTime())) return null;
+  const diff = departure.getTime() - arrival.getTime();
+  return Math.max(0, Math.round(diff / (1000 * 60 * 60 * 24)));
+}
+
+export function calculateBookingTotal(arrivalDate, departureDate, appliedRate) {
+  const nights = nightsBetween(arrivalDate, departureDate);
+  const rate = Number(appliedRate);
+  if (nights === null || nights <= 0 || Number.isNaN(rate)) return null;
+  return { nights, total: nights * rate };
 }

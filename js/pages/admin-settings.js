@@ -19,25 +19,23 @@ async function loadSettings() {
   try {
     const response = await withLoading(() => getSettings(), 'Loading settings…');
     const settings = response.data?.settings || response.data || {};
+    const payment = settings.payment || {};
 
     form.elements.facilityName.value = settings.facilityName || '';
     form.elements.supportEmail.value = settings.supportEmail || '';
     form.elements.supportPhone.value = settings.supportPhone || '';
-    form.elements.bookingInstructions.value = settings.bookingInstructions || '';
-    form.elements.bookingsEnabled.checked =
-      settings.bookingsEnabled === undefined ? true : Boolean(settings.bookingsEnabled);
+    form.elements.mpesaPaybill.value = payment.mpesaPaybillNumber || '';
+    form.elements.bankAccountName.value = payment.bankAccountName || '';
+    form.elements.bankAccountNumber.value = payment.bankAccountNumber || '';
+    form.elements.bankName.value = payment.bankName || '';
   } catch (error) {
-    showToast(
-      error instanceof ApiError ? error.message : 'Unable to load settings.',
-      'error',
-    );
+    showToast(error instanceof ApiError ? error.message : 'Unable to load settings.', 'error');
   }
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const values = getFormValues(form);
-  values.bookingsEnabled = Boolean(form.elements.bookingsEnabled.checked);
 
   const { valid, errors } = validateFields(values, {
     supportEmail: {
@@ -45,6 +43,10 @@ form.addEventListener('submit', async (event) => {
       custom: (value) =>
         isBlank(value) || isValidEmail(value) ? null : 'Enter a valid email address.',
     },
+    mpesaPaybill: { required: true, label: 'M-Pesa Paybill Number' },
+    bankAccountName: { required: true, label: 'Bank Account Name' },
+    bankAccountNumber: { required: true, label: 'Bank Account Number' },
+    bankName: { required: true, label: 'Bank Name' },
   });
 
   applyFieldErrors(form, errors);
@@ -56,15 +58,16 @@ form.addEventListener('submit', async (event) => {
       facilityName: values.facilityName || '',
       supportEmail: values.supportEmail || '',
       supportPhone: values.supportPhone || '',
-      bookingInstructions: values.bookingInstructions || '',
-      bookingsEnabled: values.bookingsEnabled,
+      payment: {
+        mpesaPaybillNumber: values.mpesaPaybill,
+        bankAccountName: values.bankAccountName,
+        bankAccountNumber: values.bankAccountNumber,
+        bankName: values.bankName,
+      },
     });
     showToast('Settings saved successfully.', 'success');
   } catch (error) {
-    showToast(
-      error instanceof ApiError ? error.message : 'Unable to save settings.',
-      'error',
-    );
+    showToast(error instanceof ApiError ? error.message : 'Unable to save settings.', 'error');
   } finally {
     setButtonLoading(submitBtn, false);
   }

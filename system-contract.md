@@ -1,38 +1,28 @@
 # SYSTEM_CONTRACT.md
 
-# CARE Kenya Dadaab Accommodation Booking System
+# CARE Accommodation Management System (CAMS)
 
-Version: 1.0
+Version: 2.0
 
 ---
 
 # Purpose
 
-This document is the single source of truth for the CARE Kenya Dadaab Accommodation Booking System.
+This document is the single source of truth for CAMS.
 
 Both the frontend and backend MUST follow this specification.
 
-No workflow, API contract, status, role, or business rule should be changed unless this document is updated.
+CAMS Version 2 replaces all Version 1 requirements. Public booking, approval workflows, and guest self-service are retired.
 
 ---
 
 # System Overview
 
-The system manages accommodation bookings for CARE Kenya's Dadaab office.
+CAMS is an internal accommodation management system for CARE Kenya facilities.
 
-The accommodation facility consists of one camp.
+Multiple camps are supported. Each booking belongs to exactly one camp.
 
-There are NO multiple locations.
-
-Rooms are identified only by:
-
-- Block
-- Room Number
-
-Example
-
-Block A
-Room 15
+Guests do not access the application. Accommodation Officers create bookings on behalf of guests.
 
 ---
 
@@ -40,678 +30,198 @@ Room 15
 
 ## Frontend
 
-- HTML
-- CSS
-- Vanilla JavaScript
-
----
+- HTML, CSS, Vanilla JavaScript, Fetch API
 
 ## Backend
 
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
+- Node.js, Express.js, MongoDB, Mongoose (backend repository)
+
+---
+
+# API
+
+- Base path: `/api/v1/`
+- All endpoints are private except `POST /auth/login`
+- JSON requests and responses
+- JWT authentication
+- Response shape:
+
+```json
+{ "success": true, "message": "…", "data": {} }
+{ "success": false, "message": "…", "errors": [] }
+```
 
 ---
 
 # User Roles
 
-## Guest
-
-No account.
-
-No login.
-
-Can
-
-- Submit booking
-- Track booking
-- Request cancellation
-
-Cannot
-
-- Login
-- View other bookings
-- Approve bookings
-
----
-
 ## Accommodation Officer
 
-Login required.
+Can: login, create/edit/cancel bookings, check-in, check-out, view bookings, view invoices.
 
-Can
-
-- Review bookings
-- Approve booking
-- Assign room
-- Reject booking
-- Approve cancellation
-- Decline cancellation
-- Check guest in
-- Check guest out
-
-Cannot
-
-- Change system settings
-
----
+Cannot: manage camps, blocks, rooms, rates, reports, users, or system settings.
 
 ## Super Admin
 
-Everything Accommodation Officer can do.
+Everything Accommodation Officer can do, plus: manage users, camps, blocks, rooms, rates, payment settings, reports, and system settings.
 
-Additionally
+## Guest
 
-- Manage users
-- Manage rooms
-- Manage accommodation rates
-- Manage settings
+No account. No login. No application access. Interacts via email only.
 
 ---
 
 # Booking Workflow
 
-Guest
+1. Accommodation Officer logs in
+2. Creates booking (camp → block → room → stay type)
+3. Booking is created immediately with status **Booked**
+4. Guest receives confirmation email
+5. Officer checks guest in → **Checked In**
+6. Officer checks guest out → **Checked Out**
+7. Invoice generated automatically on check-out
+8. Invoice emailed to guest and creating officer
 
-↓
-
-Submit Booking
-
-↓
-
-Booking Reference Generated
-
-↓
-
-Confirmation Email Sent
-
-↓
-
-Pending Review
-
-↓
-
-Accommodation Officer Reviews
-
-↓
-
-Approve + Assign Room
-
-OR
-
-Reject
-
-↓
-
-Guest Receives Email
-
-↓
-
-Check In
-
-↓
-
-Check Out
-
----
-
-# Cancellation Workflow
-
-Guest
-
-↓
-
-Track Booking
-
-↓
-
-Request Cancellation
-
-↓
-
-Status becomes
-
-Cancellation Requested
-
-↓
-
-Accommodation Officer Reviews
-
-↓
-
-Approve Cancellation
-
-OR
-
-Decline Cancellation
+There is NO approval workflow. There is NO Pending Review status.
 
 ---
 
 # Booking Statuses
 
-The following statuses are the ONLY valid booking statuses.
+Only valid statuses:
 
-Pending Review
+- Booked
+- Checked In
+- Checked Out
+- Cancelled
 
-Approved
+---
 
-Rejected
+# Camps
 
-Cancellation Requested
+Supported facilities (extensible):
 
-Cancelled
+- CARE Dadaab
+- CARE Hagadera
+- CARE Ifo
 
-Checked In
+Each booking belongs to exactly one camp. Bookings cannot span camps.
 
-Checked Out
+---
+
+# Blocks
+
+Blocks belong to a camp. Block names may repeat across camps.
+
+Managed by Super Admin. Not hardcoded.
+
+---
+
+# Rooms
+
+Rooms belong to a block (and camp through the block).
+
+Uniqueness: Camp + Block + Room Number.
+
+Room statuses: **Available**, **Maintenance** only.
+
+Occupancy is never stored on rooms; it is calculated from active bookings.
+
+---
+
+# Stay Types
+
+- Short Stay
+- Long Stay
+
+Selected manually by the officer. Never auto-determined from nights.
+
+---
+
+# Rates
+
+Per camp: Short Stay Rate, Long Stay Rate.
+
+Super Admin only. Never hardcoded.
+
+Each booking stores `appliedRate` at creation time. Historical bookings and invoices are unaffected by future rate changes.
+
+---
+
+# Guest Fields
+
+firstName, lastName, email, phone, organisation, gender, contractType, reasonForVisit, arrivalDate, departureDate, driverPickup, departureCountry, remarks.
 
 ---
 
 # Booking Reference
 
-Every booking receives a unique booking reference.
-
-Example
-
-CARE-20260717-000123
-
-Requirements
-
-- Unique
-- Human readable
-- Never changes
-- Included in every email
-- Displayed after submission
+Format: `CARE-YYYYMMDD-XXXXXX` (e.g. CARE-20260717-000123). Globally unique. No camp code.
 
 ---
 
-# Public Pages
+# Booking Editing
 
-Home
+**Booked:** all guest and accommodation fields editable.
 
-Accommodation Booking
+**Checked In:** guest fields editable; camp, block, room, stay type, arrival, departure locked.
 
-Booking Submitted
-
-Track Booking
-
-Terms & Conditions
+**Checked Out / Cancelled:** not editable.
 
 ---
 
-# Admin Pages
+# Cancellation
 
-Login
-
-Dashboard
-
-Bookings
-
-Rooms
-
-Rates
-
-Users
-
-Settings
+Officer cancels directly. Reason required. Status → Cancelled. Guest receives email. Audit log records who, when, reason.
 
 ---
 
-# Facility Settings
+# Invoices
 
-Super Admin can configure
+Generated automatically on check-out.
 
-Facility Name
+Recipients: guest + officer who created the booking.
 
-Support Email
+Contains: invoice number, booking reference, guest details, camp, block, room, dates, nights, stay type, applied rate, total, payment instructions.
 
-Support Phone
+Invoice numbers: `INV-YYYY-XXXXXX` (sequential, unique).
 
-Booking Instructions
-
-Bookings Enabled
-
-Public pages may read these non-sensitive settings.
-
-When Bookings Enabled is false
-
-- The booking form must be disabled
-- The frontend must show the configured support contact
-- The backend must reject new booking submissions
-- Existing bookings can still be tracked and cancellation requests can still be submitted
-
-Public settings endpoint
-
-GET /api/settings/public
+Payments are NOT processed in v2. Instructions only.
 
 ---
 
-# Guest Booking
+# Payment Settings (global)
 
-Guests do NOT create accounts.
-
-Guests submit
-
-First Name
-
-Last Name
-
-Email
-
-Phone Number
-
-Organisation
-
-Reason For Visit
-
-Gender
-
-Contract Type
-
-Arrival Date
-
-Departure Date
-
-Remarks
-
-Driver Pickup
-
-Departure Country
+Super Admin configures: M-Pesa Paybill, bank name, account name, account number. Shown on all invoices.
 
 ---
 
-# Track Booking
+# Reports (Super Admin)
 
-Guests track bookings using
+Types: bookings by camp, by date range, short vs long stay, room utilization, occupancy, revenue, outstanding invoices, arrivals, departures.
 
-Booking Reference
-
-+
-
-Email Address
-
-The backend must validate BOTH values before returning booking information.
+Filters: date range, camp, stay type, status. Export PDF and Excel.
 
 ---
 
-# Request Cancellation
+# Dashboard
 
-Guests cannot directly cancel bookings.
-
-Guests submit a cancellation request.
-
-Status becomes
-
-Cancellation Requested
-
-Accommodation Officer decides
-
-Approve
-
-or
-
-Decline
-
----
-
-# Approval Process
-
-Approving and assigning a room happen in ONE action.
-
-There is never an approved booking without an assigned room.
-
-Workflow
-
-Select Block
-
-↓
-
-Select Room
-
-↓
-
-Approve
-
----
-
-# Room Assignment Rules
-
-Before assigning a room
-
-The backend must verify
-
-Room exists
-
-Room is Available
-
-No overlapping booking
-
-Room not under maintenance
-
-Reject assignment if validation fails.
-
----
-
-# Room Structure
-
-Room
-
-Block
-
-Room Number
-
-Capacity
-
-Status
-
-Room Status
-
-Available
-
-Occupied
-
-Maintenance
-
----
-
-# Accommodation Rates
-
-Rates are configurable.
-
-Never hardcode accommodation prices.
-
-Only Super Admin can modify rates.
-
----
-
-# Payments
-
-Payments are NOT implemented in Version 1.
-
-The system must still prepare for future Daraja integration.
-
-Booking should contain
-
-payment.status
-
-payment.method
-
-payment.amount
-
-payment.transactionReference
-
-payment.paidAt
-
-Future payment statuses
-
-Not Required
-
-Pending
-
-Paid
-
-Failed
-
-Waived
-
----
-
-# Email Notifications
-
-Booking Submitted
-
-Booking Approved
-
-Booking Rejected
-
-Cancellation Approved
-
-Cancellation Declined
-
-Submission email must include
-
-Booking Reference
-
-Arrival Date
-
-Departure Date
-
-Current Status
-
-Reminder to save the Booking Reference
-
----
-
-# Success Page
-
-After submitting a booking the user should see
-
-Booking Submitted Successfully
-
-Booking Reference
-
-Copy Reference button
-
-Track Booking button
-
-Message
-
-Please save this Booking Reference.
-
-You will need it to
-
-Track your booking
-
-Contact CARE
-
-Request cancellation
-
-A confirmation email has been sent.
-
----
-
-# Audit Timeline
-
-Every booking maintains an immutable timeline.
-
-Examples
-
-Booking Submitted
-
-Email Sent
-
-Approved
-
-Room Assigned
-
-Cancellation Requested
-
-Cancellation Approved
-
-Checked In
-
-Checked Out
-
-Timeline entries are append-only.
-
-Never edit previous history.
-
----
-
-# API Standards
-
-REST API
-
-JSON requests
-
-JSON responses
-
-Meaningful HTTP status codes
-
-Consistent response structure
-
-Example Success
-
-{
-    "success": true,
-    "message": "Booking submitted successfully.",
-    "data": {}
-}
-
-Example Error
-
-{
-    "success": false,
-    "message": "Room is already occupied.",
-    "errors": []
-}
-
----
-
-# Validation Rules
-
-Arrival Date
-
-Must not be in the past.
-
-Departure Date
-
-Must be after Arrival Date.
-
-Email
-
-Must be valid.
-
-Phone
-
-Required.
-
-Required Fields
-
-Validate on frontend.
-
-Validate again on backend.
-
-Never trust client validation.
-
----
-
-# Security
-
-Passwords hashed with bcrypt.
-
-JWT authentication.
-
-Role-based authorization.
-
-Validate all API input.
-
-Sanitize request data.
-
-Never expose sensitive information.
-
----
-
-# Database Collections
-
-users
-
-bookings
-
-rooms
-
-rates
-
-audit_logs
-
-Future
-
-payments
-
----
-
-# Coding Principles
-
-Keep business logic in the backend.
-
-Frontend must never implement business rules.
-
-Avoid duplicated logic.
-
-Keep components reusable.
-
-Keep APIs RESTful.
-
-Keep naming consistent.
+Today's arrivals, today's departures, occupied/available rooms, outstanding invoices, recent bookings, bookings by camp.
 
 ---
 
 # Naming Convention
 
-camelCase
-
-Examples
-
-bookingReference
-
-arrivalDate
-
-departureDate
-
-driverPickup
-
-contractType
-
-roomNumber
-
-firstName
-
-lastName
-
-createdAt
-
-updatedAt
+camelCase: bookingReference, arrivalDate, campId, blockId, roomId, stayType, appliedRate, etc.
 
 ---
 
-# Out of Scope (Version 1)
+# Out of Scope (v2)
 
-No multiple camps
-
-No guest accounts
-
-No SMS
-
-No analytics
-
-No reports
-
-No calendar booking
-
-No online payments
-
-No attachments
-
-No mobile application
+Online payments, guest accounts, public booking, SMS, mobile app.
 
 ---
 
-# Future Roadmap
+# Development Rule
 
-Daraja API Integration
-
-Payment Dashboard
-
-Reports
-
-Analytics
-
-SMS Notifications
-
-Calendar View
-
-Multiple CARE Locations
-
-Room Availability Dashboard
+If requirements conflict with this document: stop, ask for clarification, do not invent business rules.

@@ -1,5 +1,5 @@
 import { api } from './client.js';
 
 export function getDashboardStats() {
-  return api.get('/dashboard/stats');
+  return api.get('/dashboard');
 }

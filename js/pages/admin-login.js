@@ -1,5 +1,6 @@
 import { login } from '../api/auth.js';
 import { ApiError } from '../api/client.js';
+import { applyBrandLogos } from '../config.js';
 import { isAuthenticated, setSession } from '../auth/session.js';
 import { setButtonLoading } from '../components/loading.js';
 import { showToast } from '../components/toast.js';
@@ -56,3 +57,5 @@ form.addEventListener('submit', async (event) => {
     setButtonLoading(submitBtn, false);
   }
 });
+
+applyBrandLogos();

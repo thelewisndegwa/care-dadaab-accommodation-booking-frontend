@@ -1,17 +1,18 @@
 :root {
-  /* Brand — CARE orange, sampled to complement the supplied logo */
-  --color-brand: #e87518;
-  --color-brand-dark: #b8520d;
-  --color-brand-soft: #fff0e3;
+  /* Brand — CARE orange */
+  --color-brand: #e8721e;
+  --color-brand-dark: #c45e12;
+  --color-brand-soft: #fff4eb;
+  --color-brand-accent: #f9b233;
 
   /* Neutrals */
-  --color-ink: #29231f;
-  --color-ink-muted: #625750;
-  --color-border: #ded5ce;
+  --color-ink: #1f2933;
+  --color-ink-muted: #5f6c7b;
+  --color-border: #d9e2ec;
   --color-surface: #ffffff;
-  --color-surface-muted: #faf6f2;
-  --color-bg: #f7f2ed;
-  --color-bg-accent: #eee5dc;
+  --color-surface-muted: #f7f9fc;
+  --color-bg: #f5f7fa;
+  --color-bg-accent: #fff8f2;
 
   /* Semantic */
   --color-success: #1b7a4e;
@@ -27,7 +28,7 @@
   --status-pending: #9a6b00;
   --status-approved: #175cd3;
   --status-rejected: #b42318;
-  --status-cancellation: #b54708;
+  --status-cancellation: #e8721e;
   --status-cancelled: #667085;
   --status-checked-in: #1b7a4e;
   --status-checked-out: #475467;
@@ -60,8 +61,8 @@
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 10px;
-  --shadow-sm: 0 1px 2px rgba(56, 38, 26, 0.06);
-  --shadow-md: 0 4px 16px rgba(56, 38, 26, 0.09);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
   --container: 1120px;
   --header-height: 64px;
   --sidebar-width: 240px;

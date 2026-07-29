@@ -1,14 +1,8 @@
-const BOOKING_STATUSES = [
-  'Pending Review',
-  'Approved',
-  'Rejected',
-  'Cancellation Requested',
-  'Cancelled',
-  'Checked In',
-  'Checked Out',
-];
+const BOOKING_STATUSES = ['Booked', 'Checked In', 'Checked Out', 'Cancelled'];
 
-const ROOM_STATUSES = ['Available', 'Occupied', 'Maintenance'];
+const ROOM_STATUSES = ['Available', 'Maintenance'];
+
+const STAY_TYPES = ['Short Stay', 'Long Stay'];
 
 const GENDERS = ['Male', 'Female', 'Other', 'Prefer not to say'];
 
@@ -22,12 +16,26 @@ const CONTRACT_TYPES = [
 
 const USER_ROLES = ['Accommodation Officer', 'Super Admin'];
 
+const REPORT_TYPES = [
+  { value: 'bookings-by-camp', label: 'Bookings by Camp' },
+  { value: 'bookings-by-date', label: 'Bookings by Date Range' },
+  { value: 'stay-type-breakdown', label: 'Short Stay vs Long Stay' },
+  { value: 'room-utilization', label: 'Room Utilization' },
+  { value: 'occupancy', label: 'Occupancy' },
+  { value: 'revenue', label: 'Revenue' },
+  { value: 'outstanding-invoices', label: 'Outstanding Invoices' },
+  { value: 'arrivals', label: 'Arrivals' },
+  { value: 'departures', label: 'Departures' },
+];
+
 export const constants = {
   BOOKING_STATUSES,
   ROOM_STATUSES,
+  STAY_TYPES,
   GENDERS,
   CONTRACT_TYPES,
   USER_ROLES,
+  REPORT_TYPES,
 };
 
 export function fillSelect(select, options, { placeholder = 'Select…', value = '' } = {}) {

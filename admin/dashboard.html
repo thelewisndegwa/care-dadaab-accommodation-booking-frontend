@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard · CARE Kenya Dadaab</title>
+  <title>Dashboard · CAMS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;650;700;750&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,20 +16,13 @@
   <div class="admin-shell">
     <aside class="admin-sidebar" data-admin-sidebar>
       <a class="brand" href="dashboard.html">
-        <img class="brand-logo" src="../assets/care-logo.png" alt="" aria-hidden="true">
+        <img class="brand-logo" src="/assets/care-logo.jpg" alt="" aria-hidden="true">
         <span class="brand-text">
           <strong>CARE Kenya</strong>
-          <span>Admin</span>
+          <span data-brand-subtitle>CAMS</span>
         </span>
       </a>
-      <nav class="admin-nav" aria-label="Admin">
-        <a href="dashboard.html" aria-current="page">Dashboard</a>
-        <a href="bookings.html">Bookings</a>
-        <a href="rooms.html" data-super-admin-only>Rooms</a>
-        <a href="rates.html" data-super-admin-only>Rates</a>
-        <a href="users.html" data-super-admin-only>Users</a>
-        <a href="settings.html" data-super-admin-only>Settings</a>
-      </nav>
+      <nav class="admin-nav" data-admin-nav aria-label="Admin"></nav>
     </aside>
 
     <div class="admin-main">
@@ -48,23 +41,58 @@
       <div class="admin-content">
         <div class="page-header">
           <h2 style="font-size:var(--text-xl);">Overview</h2>
-          <p>Live counts for bookings and rooms at the Dadaab facility.</p>
+          <p>Today's activity and facility occupancy across CARE accommodation camps.</p>
         </div>
 
         <div class="stats-grid" id="stats-grid" aria-live="polite">
-          <div class="stat"><div class="stat-label">Pending Reviews</div><div class="stat-value" data-stat="pendingReviews">—</div></div>
-          <div class="stat"><div class="stat-label">Approved Bookings</div><div class="stat-value" data-stat="approvedBookings">—</div></div>
-          <div class="stat"><div class="stat-label">Checked In</div><div class="stat-value" data-stat="checkedIn">—</div></div>
-          <div class="stat"><div class="stat-label">Checked Out</div><div class="stat-value" data-stat="checkedOut">—</div></div>
-          <div class="stat"><div class="stat-label">Cancellation Requests</div><div class="stat-value" data-stat="cancellationRequests">—</div></div>
-          <div class="stat"><div class="stat-label">Available Rooms</div><div class="stat-value" data-stat="availableRooms">—</div></div>
+          <div class="stat"><div class="stat-label">Today's Arrivals</div><div class="stat-value" data-stat="todayArrivals">—</div></div>
+          <div class="stat"><div class="stat-label">Today's Departures</div><div class="stat-value" data-stat="todayDepartures">—</div></div>
           <div class="stat"><div class="stat-label">Occupied Rooms</div><div class="stat-value" data-stat="occupiedRooms">—</div></div>
-          <div class="stat"><div class="stat-label">Maintenance Rooms</div><div class="stat-value" data-stat="maintenanceRooms">—</div></div>
+          <div class="stat"><div class="stat-label">Available Rooms</div><div class="stat-value" data-stat="availableRooms">—</div></div>
+          <div class="stat"><div class="stat-label">Outstanding Invoices</div><div class="stat-value" data-stat="outstandingInvoices">—</div></div>
         </div>
 
         <div class="form-actions">
-          <a class="btn btn-primary" href="bookings.html?status=Pending%20Review">Review Pending Bookings</a>
-          <a class="btn btn-secondary" href="bookings.html?status=Cancellation%20Requested">View Cancellation Requests</a>
+          <a class="btn btn-primary" href="booking-create.html">Create Booking</a>
+          <a class="btn btn-secondary" href="bookings.html">View All Bookings</a>
+        </div>
+
+        <div class="panel" style="margin-top:var(--space-6);">
+          <h3 style="font-size:var(--text-lg);margin-bottom:var(--space-4);">Bookings by Camp</h3>
+          <div class="table-wrap">
+            <table class="table" aria-label="Bookings by camp">
+              <thead>
+                <tr>
+                  <th>Camp</th>
+                  <th>Active Bookings</th>
+                </tr>
+              </thead>
+              <tbody id="camp-stats-body">
+                <tr><td colspan="2" class="empty-state">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:var(--space-6);">
+          <h3 style="font-size:var(--text-lg);margin-bottom:var(--space-4);">Recent Bookings</h3>
+          <div class="table-wrap">
+            <table class="table" aria-label="Recent bookings">
+              <thead>
+                <tr>
+                  <th>Reference</th>
+                  <th>Guest</th>
+                  <th>Camp</th>
+                  <th>Arrival</th>
+                  <th>Departure</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-bookings-body">
+                <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
