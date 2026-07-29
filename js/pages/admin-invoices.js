@@ -1,4 +1,4 @@
-import { listInvoices, getInvoice } from '../api/invoices.js';
+import { listInvoices, getInvoice, updateInvoicePaymentStatus } from '../api/invoices.js';
 import { ApiError } from '../api/client.js';
 import { getBrandLogoDataUrl } from '../config.js';
 import { requireAuth } from '../auth/session.js';
@@ -41,8 +41,10 @@ function initInvoiceModalPrintMode() {
 const tableBody = document.getElementById('invoices-table-body');
 const paginationEl = document.getElementById('invoices-pagination');
 const filtersForm = document.getElementById('invoices-filters');
+const statusActionsEl = document.getElementById('invoice-status-actions');
 
 const state = { page: 1, limit: 10, paymentStatus: '', search: '', total: 0, totalPages: 1, invoices: [] };
+const currentInvoice = { id: null, paymentStatus: null };
 
 function boot() {
   initInvoiceModalPrintMode();
@@ -156,6 +158,50 @@ async function printInvoice() {
   window.print();
 }
 
+function renderInvoiceStatusActions(invoice) {
+  if (!statusActionsEl) return;
+
+  const status = invoice.paymentStatus || 'Unpaid';
+  currentInvoice.id = invoice._id || invoice.id;
+  currentInvoice.paymentStatus = status;
+
+  statusActionsEl.innerHTML = `
+    <label class="form-label" for="invoice-payment-status" style="margin:0;">Payment status</label>
+    <select class="form-control" id="invoice-payment-status" style="width:auto;min-width:8.5rem;">
+      <option value="Unpaid">Unpaid</option>
+      <option value="Paid">Paid</option>
+      <option value="Waived">Waived</option>
+    </select>
+  `;
+
+  const select = document.getElementById('invoice-payment-status');
+  select.value = status;
+  select.onchange = () => updateInvoiceStatus(select);
+}
+
+async function updateInvoiceStatus(select) {
+  const nextStatus = select.value;
+  const previousStatus = currentInvoice.paymentStatus || 'Unpaid';
+
+  if (!currentInvoice.id || nextStatus === previousStatus) return;
+
+  select.disabled = true;
+  try {
+    await withLoading(
+      () => updateInvoicePaymentStatus(currentInvoice.id, nextStatus),
+      'Updating invoice…',
+    );
+    currentInvoice.paymentStatus = nextStatus;
+    showToast(`Invoice marked as ${nextStatus.toLowerCase()}.`, 'success');
+    await loadInvoices();
+  } catch (error) {
+    select.value = previousStatus;
+    showToast(error instanceof ApiError ? error.message : 'Unable to update invoice.', 'error');
+  } finally {
+    select.disabled = false;
+  }
+}
+
 async function openInvoiceDetail(id) {
   try {
     const response = await withLoading(() => getInvoice(id), 'Loading invoice…');
@@ -171,6 +217,7 @@ async function openInvoiceDetail(id) {
       </div>
     `;
 
+    renderInvoiceStatusActions(invoice);
     document.getElementById('invoice-print-btn').onclick = () => printInvoice();
     setInvoicePrintMode(true);
     openModal(INVOICE_MODAL_ID);

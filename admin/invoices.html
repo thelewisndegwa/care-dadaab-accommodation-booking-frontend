@@ -50,7 +50,7 @@
             <button class="btn btn-primary" type="submit">Apply</button>
           </div>
         </form>
-        <p class="form-hint" style="margin-bottom:var(--space-4);">Click a row to view or print an invoice.</p>
+        <p class="form-hint" style="margin-bottom:var(--space-4);">Click a row to view or print an invoice. Use the payment status dropdown to update it.</p>
         <div class="table-wrap">
           <table class="table" aria-label="Invoices">
             <thead>
@@ -71,6 +71,7 @@
       </div>
       <div class="modal-body" id="invoice-detail-body"></div>
       <div class="modal-footer">
+        <div id="invoice-status-actions" class="invoice-status-actions" style="margin-right:auto;display:flex;align-items:center;gap:var(--space-3);"></div>
         <button type="button" class="btn btn-secondary" id="invoice-print-btn">Print</button>
         <button type="button" class="btn btn-secondary" data-close-modal="invoice">Close</button>
       </div>
