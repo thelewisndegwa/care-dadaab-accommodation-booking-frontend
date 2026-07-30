@@ -16,6 +16,10 @@ export function updateBlock(campId, blockId, payload) {
   return api.put(`/camps/${campId}/blocks/${blockId}`, payload);
 }
 
+export function deactivateBlock(campId, blockId) {
+  return api.put(`/camps/${campId}/blocks/${blockId}`, { isActive: false });
+}
+
 export function deleteBlock(campId, blockId) {
   return api.delete(`/camps/${campId}/blocks/${blockId}`);
 }

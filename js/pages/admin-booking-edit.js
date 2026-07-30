@@ -142,9 +142,9 @@ function renderTimeline(events) {
        <ul class="timeline-list">${events
          .map(
            (entry) =>
-             `<li><strong>${escapeHtml(entry.event || entry.action || entry.status || 'Event')}</strong>
-              — ${escapeHtml(formatDateTime(entry.at || entry.createdAt || entry.timestamp))}
-              ${entry.note || entry.message ? ` · ${escapeHtml(entry.note || entry.message)}` : ''}
+             `<li><strong>${escapeHtml(entry.action || entry.event || entry.status || 'Event')}</strong>
+              — ${escapeHtml(formatDateTime(entry.createdAt || entry.at || entry.timestamp))}
+              ${entry.message || entry.note ? ` · ${escapeHtml(entry.message || entry.note)}` : ''}
               ${entry.reason ? ` · ${escapeHtml(entry.reason)}` : ''}</li>`,
          )
          .join('')}</ul>`

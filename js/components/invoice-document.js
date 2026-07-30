@@ -43,7 +43,9 @@ export function renderInvoiceDocument(invoice, { logoSrc = config.BRAND_LOGO_SRC
   const rateAmount = invoice.appliedRate?.amount ?? invoice.appliedRate;
   const nights = invoiceNights(invoice);
   const nightsLabel = nights == null ? '—' : String(nights);
-  const issuedDate = formatDate(invoice.issuedAt || invoice.createdAt || invoice.invoiceDate);
+  const issuedDate = formatDate(
+    invoice.generatedAt || invoice.issuedAt || invoice.createdAt || invoice.invoiceDate,
+  );
   const lineTotal = invoice.totalAmount != null
     ? formatMoney(invoice.totalAmount, currency)
     : (nights != null && rateAmount != null

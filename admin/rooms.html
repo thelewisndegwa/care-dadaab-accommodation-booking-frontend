@@ -34,14 +34,15 @@
         <div class="toolbar">
           <div class="form-group"><label class="form-label" for="filter-camp">Camp</label><select class="form-control" id="filter-camp"></select></div>
           <div class="form-group"><label class="form-label" for="filter-block">Block</label><select class="form-control" id="filter-block"><option value="">All blocks</option></select></div>
-          <button type="button" class="btn btn-primary" id="add-room-btn">Add Room</button>
+          <div class="form-group search"><label class="form-label" for="filter-search">Search Room</label><input class="form-control" type="search" id="filter-search" placeholder="Room number or guest"></div>
+          <button type="button" class="btn btn-primary" id="add-room-btn" data-super-admin-only>Add Room</button>
         </div>
         <div class="table-wrap">
           <table class="table" aria-label="Rooms">
             <thead>
-              <tr><th>Camp</th><th>Block</th><th>Room Number</th><th>Capacity</th><th>Room Status</th><th>Active</th><th>Actions</th></tr>
+              <tr><th>Camp</th><th>Block</th><th>Room Number</th><th>Current Guest</th><th>Capacity</th><th>Room Status</th><th>Active</th><th>Actions</th></tr>
             </thead>
-            <tbody id="rooms-table-body"><tr><td colspan="7" class="empty-state">Loading…</td></tr></tbody>
+            <tbody id="rooms-table-body"><tr><td colspan="8" class="empty-state">Loading…</td></tr></tbody>
           </table>
         </div>
       </div>

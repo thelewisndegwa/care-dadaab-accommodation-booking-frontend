@@ -1,5 +1,5 @@
 import { listCamps } from '../api/camps.js';
-import { listBlocks, createBlock, updateBlock, deleteBlock, reactivateBlock } from '../api/blocks.js';
+import { listBlocks, createBlock, updateBlock, deactivateBlock, deleteBlock, reactivateBlock } from '../api/blocks.js';
 import { ApiError } from '../api/client.js';
 import { requireAuth } from '../auth/session.js';
 import { initAdminShell } from '../components/shell.js';
@@ -86,7 +86,7 @@ function renderTable() {
         ? '<span class="badge badge-approved">Active</span>'
         : '<span class="badge badge-cancelled">Inactive</span>';
       const toggleButton = active
-        ? `<button type="button" class="btn btn-danger btn-sm" data-action="deactivate" data-id="${escapeHtml(id)}">Deactivate</button>`
+        ? `<button type="button" class="btn btn-secondary btn-sm" data-action="deactivate" data-id="${escapeHtml(id)}">Deactivate</button>`
         : `<button type="button" class="btn btn-primary btn-sm" data-action="reactivate" data-id="${escapeHtml(id)}">Reactivate</button>`;
       return `
         <tr>
@@ -97,6 +97,7 @@ function renderTable() {
             <div class="table-actions">
               <button type="button" class="btn btn-secondary btn-sm" data-action="edit" data-id="${escapeHtml(id)}">Edit</button>
               ${toggleButton}
+              <button type="button" class="btn btn-danger btn-sm" data-action="delete" data-id="${escapeHtml(id)}">Delete</button>
             </div>
           </td>
         </tr>
@@ -169,17 +170,35 @@ async function onTableClick(event) {
   if (action === 'deactivate' && campId) {
     const confirmed = await confirmDialog({
       title: 'Deactivate block',
-      message: `Deactivate block ${block?.name || ''}?`,
+      message: `Deactivate block ${block?.name || ''}? It will be hidden from booking selectors.`,
       confirmLabel: 'Deactivate',
       danger: true,
     });
     if (!confirmed) return;
     try {
-      await withLoading(() => deleteBlock(campId, id), 'Deactivating…');
+      await withLoading(() => deactivateBlock(campId, id), 'Deactivating…');
       showToast('Block deactivated.', 'success');
       loadBlocks();
     } catch (error) {
       showToast(error instanceof ApiError ? error.message : 'Unable to deactivate block.', 'error');
+    }
+    return;
+  }
+
+  if (action === 'delete' && campId) {
+    const confirmed = await confirmDialog({
+      title: 'Delete block',
+      message: `Permanently delete block ${block?.name || ''}? This only works if the block has no rooms.`,
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!confirmed) return;
+    try {
+      await withLoading(() => deleteBlock(campId, id), 'Deleting…');
+      showToast('Block deleted.', 'success');
+      loadBlocks();
+    } catch (error) {
+      showToast(error instanceof ApiError ? error.message : 'Unable to delete block.', 'error');
     }
     return;
   }

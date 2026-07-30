@@ -66,18 +66,19 @@ export function buildBookingPayload(values) {
 }
 
 export function populateGuestFields(form, booking) {
-  form.elements.firstName.value = booking.firstName || '';
-  form.elements.lastName.value = booking.lastName || '';
-  form.elements.email.value = booking.email || '';
-  form.elements.phone.value = booking.phone || '';
-  form.elements.organisation.value = booking.organisation || '';
-  form.elements.gender.value = booking.gender || '';
-  form.elements.contractType.value = booking.contractType || '';
+  const guest = booking.guest || booking;
+  form.elements.firstName.value = guest.firstName || booking.firstName || '';
+  form.elements.lastName.value = guest.lastName || booking.lastName || '';
+  form.elements.email.value = guest.email || booking.email || '';
+  form.elements.phone.value = guest.phone || booking.phone || '';
+  form.elements.organisation.value = guest.organisation || booking.organisation || '';
+  form.elements.gender.value = guest.gender || booking.gender || '';
+  form.elements.contractType.value = guest.contractType || booking.contractType || '';
   form.elements.reasonForVisit.value = booking.reasonForVisit || '';
   form.elements.arrivalDate.value = sliceDate(booking.arrivalDate);
   form.elements.departureDate.value = sliceDate(booking.departureDate);
   form.elements.driverPickup.checked = Boolean(booking.driverPickup);
-  form.elements.departureCountry.value = booking.departureCountry || '';
+  form.elements.departureCountry.value = guest.departureCountry || booking.departureCountry || '';
   form.elements.remarks.value = booking.remarks || '';
 }
 

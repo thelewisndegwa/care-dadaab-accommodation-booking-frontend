@@ -16,6 +16,10 @@ export function updateCamp(id, payload) {
   return api.put(`/camps/${id}`, payload);
 }
 
+export function deactivateCamp(id) {
+  return api.put(`/camps/${id}`, { isActive: false });
+}
+
 export function deleteCamp(id) {
   return api.delete(`/camps/${id}`);
 }

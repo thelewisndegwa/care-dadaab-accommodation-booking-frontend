@@ -14,7 +14,7 @@ export async function downloadReportExport(type, format, params = {}) {
   const base = config.API_BASE_URL.replace(/\/$/, '');
   const url = new URL(`${base}/reports/${type}`);
 
-  const apiFormat = format === 'excel' ? 'csv' : format;
+  const apiFormat = format === 'excel' ? 'xlsx' : format;
   const query = { ...params, format: apiFormat };
 
   Object.entries(query).forEach(([key, value]) => {
@@ -35,7 +35,7 @@ export async function downloadReportExport(type, format, params = {}) {
   const blob = await response.blob();
   const filename =
     response.headers.get('Content-Disposition')?.match(/filename="?([^"]+)"?/)?.[1]
-    || `report-${type}.${apiFormat === 'csv' ? 'csv' : apiFormat}`;
+    || `report-${type}.${apiFormat === 'xlsx' ? 'xlsx' : apiFormat === 'csv' ? 'csv' : apiFormat}`;
 
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);

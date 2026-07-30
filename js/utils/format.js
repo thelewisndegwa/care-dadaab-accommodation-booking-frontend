@@ -102,6 +102,44 @@ export function fullName(person) {
   return [person.firstName, person.lastName].filter(Boolean).join(' ') || '—';
 }
 
+/** Current occupant for a room record returned by the API. */
+export function roomCurrentGuest(room) {
+  if (!room) return '—';
+  const guest =
+    room.currentGuest
+    || room.occupant
+    || room.activeBooking?.guest
+    || room.currentBooking?.guest;
+  if (guest) return fullName(guest);
+
+  const booking = room.activeBooking || room.currentBooking;
+  if (booking) return fullName(booking);
+
+  if (room.currentGuestName) return room.currentGuestName;
+  return '—';
+}
+
+/** Email delivery status for an invoice. */
+export function invoiceEmailStatus(invoice) {
+  if (!invoice) return '—';
+  if (invoice.emailStatus) return invoice.emailStatus;
+  if (invoice.emailedAt) return 'Sent';
+  if (invoice.emailSent === true) return 'Sent';
+  if (invoice.emailSent === false) return 'Not sent';
+  // Backend emails guest and officer when invoice is generated (invoice.service.js).
+  if (invoice.generatedAt) return 'Sent';
+  return '—';
+}
+
+export function emailStatusBadge(status) {
+  if (!status || status === '—') return '—';
+  const normalized = String(status).toLowerCase();
+  const sent = normalized === 'sent' || normalized === 'delivered';
+  const failed = normalized === 'failed' || normalized === 'error';
+  const cls = sent ? 'badge-approved' : failed ? 'badge-cancelled' : 'badge-pending';
+  return `<span class="badge ${cls}">${escapeHtml(status)}</span>`;
+}
+
 export function yesNo(value) {
   if (value === true || value === 'true' || value === 'Yes') return 'Yes';
   if (value === false || value === 'false' || value === 'No') return 'No';

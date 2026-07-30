@@ -1,4 +1,4 @@
-import { listInvoices, getInvoice, updateInvoicePaymentStatus } from '../api/invoices.js';
+import { listInvoices, getInvoice, downloadInvoicePdf } from '../api/invoices.js';
 import { ApiError } from '../api/client.js';
 import { getBrandLogoDataUrl } from '../config.js';
 import { requireAuth } from '../auth/session.js';
@@ -12,7 +12,8 @@ import {
   escapeHtml,
   formatMoney,
   fullName,
-  statusBadge,
+  invoiceEmailStatus,
+  emailStatusBadge,
 } from '../utils/format.js';
 
 const INVOICE_MODAL_ID = 'invoice';
@@ -38,20 +39,20 @@ function initInvoiceModalPrintMode() {
     }
   });
 }
+
 const tableBody = document.getElementById('invoices-table-body');
 const paginationEl = document.getElementById('invoices-pagination');
 const filtersForm = document.getElementById('invoices-filters');
-const statusActionsEl = document.getElementById('invoice-status-actions');
+const emailStatusEl = document.getElementById('invoice-email-status');
 
-const state = { page: 1, limit: 10, paymentStatus: '', search: '', total: 0, totalPages: 1, invoices: [] };
-const currentInvoice = { id: null, paymentStatus: null };
+const state = { page: 1, limit: 10, search: '', total: 0, totalPages: 1, invoices: [] };
+let currentInvoiceId = null;
 
 function boot() {
   initInvoiceModalPrintMode();
 
   filtersForm?.addEventListener('submit', (event) => {
     event.preventDefault();
-    state.paymentStatus = filtersForm.elements.paymentStatus?.value || '';
     state.search = filtersForm.elements.search?.value?.trim() || '';
     state.page = 1;
     loadInvoices();
@@ -92,7 +93,6 @@ async function loadInvoices() {
         listInvoices({
           page: state.page,
           limit: state.limit,
-          paymentStatus: state.paymentStatus,
           search: state.search,
         }),
       'Loading invoices…',
@@ -133,6 +133,7 @@ function renderTable() {
       const id = invoice._id || invoice.id;
       const guest = invoice.guest || invoice;
       const currency = invoice.appliedRate?.currency || 'KES';
+      const emailStatus = invoiceEmailStatus(invoice);
       return `
         <tr class="table-row-clickable" data-invoice-id="${escapeHtml(id)}" tabindex="0" role="button" aria-label="View invoice ${escapeHtml(invoice.invoiceNumber || '')}">
           <td><strong>${escapeHtml(invoice.invoiceNumber || '—')}</strong></td>
@@ -140,7 +141,7 @@ function renderTable() {
           <td>${escapeHtml(fullName(guest))}</td>
           <td>${escapeHtml(invoice.campName || '—')}</td>
           <td>${escapeHtml(formatMoney(invoice.totalAmount, currency))}</td>
-          <td>${statusBadge(invoice.paymentStatus || 'Unpaid')}</td>
+          <td>${emailStatusBadge(emailStatus)}</td>
         </tr>
       `;
     })
@@ -158,47 +159,25 @@ async function printInvoice() {
   window.print();
 }
 
-function renderInvoiceStatusActions(invoice) {
-  if (!statusActionsEl) return;
-
-  const status = invoice.paymentStatus || 'Unpaid';
-  currentInvoice.id = invoice._id || invoice.id;
-  currentInvoice.paymentStatus = status;
-
-  statusActionsEl.innerHTML = `
-    <label class="form-label" for="invoice-payment-status" style="margin:0;">Payment status</label>
-    <select class="form-control" id="invoice-payment-status" style="width:auto;min-width:8.5rem;">
-      <option value="Unpaid">Unpaid</option>
-      <option value="Paid">Paid</option>
-      <option value="Waived">Waived</option>
-    </select>
+function renderEmailStatus(invoice) {
+  if (!emailStatusEl) return;
+  const status = invoiceEmailStatus(invoice);
+  emailStatusEl.innerHTML = `
+    <span class="form-label" style="margin:0;">Email status</span>
+    ${emailStatusBadge(status)}
   `;
-
-  const select = document.getElementById('invoice-payment-status');
-  select.value = status;
-  select.onchange = () => updateInvoiceStatus(select);
 }
 
-async function updateInvoiceStatus(select) {
-  const nextStatus = select.value;
-  const previousStatus = currentInvoice.paymentStatus || 'Unpaid';
-
-  if (!currentInvoice.id || nextStatus === previousStatus) return;
-
-  select.disabled = true;
+async function downloadPdf() {
+  if (!currentInvoiceId) return;
   try {
-    await withLoading(
-      () => updateInvoicePaymentStatus(currentInvoice.id, nextStatus),
-      'Updating invoice…',
-    );
-    currentInvoice.paymentStatus = nextStatus;
-    showToast(`Invoice marked as ${nextStatus.toLowerCase()}.`, 'success');
-    await loadInvoices();
+    await withLoading(() => downloadInvoicePdf(currentInvoiceId), 'Downloading PDF…');
+    showToast('Invoice PDF downloaded.', 'success');
   } catch (error) {
-    select.value = previousStatus;
-    showToast(error instanceof ApiError ? error.message : 'Unable to update invoice.', 'error');
-  } finally {
-    select.disabled = false;
+    showToast(
+      error instanceof ApiError ? error.message : error.message || 'Unable to download PDF.',
+      'error',
+    );
   }
 }
 
@@ -207,6 +186,7 @@ async function openInvoiceDetail(id) {
     const response = await withLoading(() => getInvoice(id), 'Loading invoice…');
     const invoice = response.data?.invoice || response.data;
     const logoSrc = await getBrandLogoDataUrl();
+    currentInvoiceId = invoice._id || invoice.id || id;
 
     document.getElementById('invoice-modal-title').textContent =
       invoice.invoiceNumber ? `Invoice ${invoice.invoiceNumber}` : 'Invoice';
@@ -217,8 +197,9 @@ async function openInvoiceDetail(id) {
       </div>
     `;
 
-    renderInvoiceStatusActions(invoice);
+    renderEmailStatus(invoice);
     document.getElementById('invoice-print-btn').onclick = () => printInvoice();
+    document.getElementById('invoice-pdf-btn').onclick = () => downloadPdf();
     setInvoicePrintMode(true);
     openModal(INVOICE_MODAL_ID);
   } catch (error) {

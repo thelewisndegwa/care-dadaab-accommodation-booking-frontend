@@ -25,7 +25,7 @@ Consumes a private REST API at `/api/v1/`. No backend code lives in this reposit
 | Invoices | `admin/invoices.html` | Staff |
 | Camps | `admin/camps.html` | Super Admin |
 | Blocks | `admin/blocks.html` | Super Admin |
-| Rooms | `admin/rooms.html` | Super Admin |
+| Rooms | `admin/rooms.html` | Staff (manage: Super Admin) |
 | Rates | `admin/rates.html` | Super Admin |
 | Reports | `admin/reports.html` | Super Admin |
 | Users | `admin/users.html` | Super Admin |
@@ -41,7 +41,7 @@ npx serve .
 Configure API base URL in `js/config.js`:
 
 ```js
-API_BASE_URL: 'http://localhost:5001/api/v1'
+API_BASE_URL: 'http://localhost:5000/api/v1'
 ```
 
 Or at runtime before modules load:
@@ -102,11 +102,11 @@ See `system-contract.md` for full business rules and `js/api/` for client wrappe
 
 ### Invoices
 
-- `GET /invoices` · `GET /invoices/:id` · `PATCH /invoices/:id/payment-status`
+- `GET /invoices` · `GET /invoices/:id` · `GET /invoices/:id?format=pdf`
 
 ### Reports (Super Admin)
 
-- `GET /reports/:type?from=&to=&campId=&stayType=&format=json|csv|pdf`
+- `GET /reports/:type?from=&to=&campId=&stayType=&status=&format=json|pdf|xlsx`
 
 ### Dashboard
 
@@ -127,7 +127,7 @@ This frontend targets the CAMS backend at `care-dadaab-accommodation-booking-bac
 
 | Setting | Frontend (`js/config.js`) | Backend (`.env`) |
 |---------|---------------------------|------------------|
-| API base | `http://localhost:5001/api/v1` | `API_PREFIX=/api/v1`, `PORT=5001` |
+| API base | `http://localhost:5000/api/v1` | `API_PREFIX=/api/v1`, `PORT=5000` |
 | CORS | Any static origin | `CORS_ORIGIN=*` (or your frontend URL) |
 
 ### Run both locally
@@ -149,8 +149,8 @@ If login fails with **Route not found: POST /api/v1/auth/login**, another app is
 - Blocks: `GET/POST /camps/:campId/blocks`, not a top-level `/blocks` route
 - Dashboard: `GET /dashboard` (not `/dashboard/stats`)
 - Rates: `POST /camps/:campId/rates` per stay type (`stayType`, `amount`, `currency`)
-- Reports: `GET /reports/:type?from=&to=&campId=&stayType=&format=json|csv` — use CSV export or Print in the UI
+- Reports: `GET /reports/:type` with `from`, `to`, `campId`, `stayType`, and `format=json|pdf|xlsx|excel` (no booking status filter on backend)
 - Settings payment fields: nested under `payment` (`mpesaPaybillNumber`, `bankName`, etc.)
-- Invoices: filter by `paymentStatus` (`Unpaid`, `Paid`, `Waived`); no PDF download endpoint (use Print)
+- Invoices: display email status; use Print or Download PDF in the UI
 - Bookings: backend snapshots `appliedRate` on create; do not send `appliedRate` from the form
 

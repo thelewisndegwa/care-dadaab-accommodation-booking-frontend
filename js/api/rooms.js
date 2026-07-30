@@ -16,6 +16,10 @@ export function updateRoom(id, payload) {
   return api.put(`/rooms/${id}`, payload);
 }
 
+export function deactivateRoom(id) {
+  return api.put(`/rooms/${id}`, { isActive: false });
+}
+
 export function deleteRoom(id) {
   return api.delete(`/rooms/${id}`);
 }

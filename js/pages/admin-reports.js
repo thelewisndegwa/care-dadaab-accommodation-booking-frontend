@@ -11,7 +11,8 @@ import { escapeHtml } from '../utils/format.js';
 const form = document.getElementById('report-filters');
 const reportTypeSelect = document.getElementById('reportType');
 const generateBtn = document.getElementById('generate-report');
-const exportCsvBtn = document.getElementById('export-csv');
+const exportPdfBtn = document.getElementById('export-pdf');
+const exportExcelBtn = document.getElementById('export-excel');
 const printBtn = document.getElementById('print-report');
 const resultsEl = document.getElementById('report-results');
 const resultsHead = document.getElementById('report-results-head');
@@ -28,7 +29,8 @@ function boot() {
     generateReport();
   });
 
-  exportCsvBtn.addEventListener('click', () => exportReport('csv'));
+  exportPdfBtn.addEventListener('click', () => exportReport('pdf'));
+  exportExcelBtn.addEventListener('click', () => exportReport('excel'));
   printBtn.addEventListener('click', () => window.print());
 
   loadCamps();
@@ -62,7 +64,8 @@ function buildParams() {
 }
 
 function setExportEnabled(enabled) {
-  exportCsvBtn.disabled = !enabled;
+  exportPdfBtn.disabled = !enabled;
+  exportExcelBtn.disabled = !enabled;
   printBtn.disabled = !enabled;
 }
 
@@ -123,9 +126,10 @@ async function exportReport(format) {
   if (!reportType) return;
 
   const params = lastParams || buildParams();
+  const label = format === 'pdf' ? 'PDF' : 'Excel';
   try {
-    await withLoading(() => downloadReportExport(reportType, format, params), 'Exporting…');
-    showToast('Report exported as CSV.', 'success');
+    await withLoading(() => downloadReportExport(reportType, format, params), `Exporting ${label}…`);
+    showToast(`Report exported as ${label}.`, 'success');
   } catch (error) {
     showToast(error instanceof ApiError ? error.message : 'Export failed.', 'error');
   }

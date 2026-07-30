@@ -6,11 +6,12 @@ import { getUser, clearSession, isSuperAdmin } from '../auth/session.js';
 export const ADMIN_NAV = [
   { href: 'dashboard.html', label: 'Dashboard' },
   { href: 'bookings.html', label: 'Bookings' },
-  { href: 'invoices.html', label: 'Invoices' },
+  { href: 'booking-create.html', label: 'Create Booking' },
   { href: 'camps.html', label: 'Camps', superAdmin: true },
   { href: 'blocks.html', label: 'Blocks', superAdmin: true },
-  { href: 'rooms.html', label: 'Rooms', superAdmin: true },
+  { href: 'rooms.html', label: 'Rooms' },
   { href: 'rates.html', label: 'Rates', superAdmin: true },
+  { href: 'invoices.html', label: 'Invoices' },
   { href: 'reports.html', label: 'Reports', superAdmin: true },
   { href: 'users.html', label: 'Users', superAdmin: true },
   { href: 'settings.html', label: 'Settings', superAdmin: true },
@@ -21,15 +22,13 @@ export function renderAdminNav(user = getUser()) {
   if (!nav) return;
 
   const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
-  const bookingPages = new Set(['booking-create.html', 'booking-edit.html']);
-  const isBookingSection = bookingPages.has(currentPage);
 
   nav.innerHTML = ADMIN_NAV
     .filter((item) => !item.superAdmin || isSuperAdmin(user))
     .map((item) => {
       const isActive =
         currentPage === item.href
-        || (item.href === 'bookings.html' && isBookingSection);
+        || (item.href === 'bookings.html' && currentPage === 'booking-edit.html');
       const attrs = isActive ? ' aria-current="page"' : '';
       const superAttr = item.superAdmin ? ' data-super-admin-only' : '';
       return `<a href="${item.href}"${attrs}${superAttr}>${item.label}</a>`;

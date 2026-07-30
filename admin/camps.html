@@ -31,14 +31,17 @@
         </div>
       </header>
       <div class="admin-content">
-        <div class="toolbar" style="justify-content:space-between;align-items:center;">
-          <p class="mb-0 text-muted">Manage CARE accommodation facilities.</p>
+        <div class="toolbar" style="justify-content:space-between;align-items:flex-end;">
+          <div class="form-group search" style="flex:1;max-width:320px;">
+            <label class="form-label" for="camp-search">Search</label>
+            <input class="form-control" type="search" id="camp-search" placeholder="Search camps by name">
+          </div>
           <button type="button" class="btn btn-primary" id="add-camp-btn">Add Camp</button>
         </div>
         <div class="table-wrap">
           <table class="table" aria-label="Camps">
-            <thead><tr><th>Name</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="camps-table-body"><tr><td colspan="3" class="empty-state">Loading…</td></tr></tbody>
+            <thead><tr><th>Name</th><th>Code</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="camps-table-body"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -54,7 +57,8 @@
         <div class="modal-body">
           <input type="hidden" id="camp-id" name="id">
           <div class="form-group"><label class="form-label" for="name">Camp Name <span class="required">*</span></label><input class="form-control" id="name" name="name" required><span class="form-error" data-error-for="name"></span></div>
-          <div class="form-group"><label class="form-label" for="code">Code</label><input class="form-control" id="code" name="code" placeholder="e.g. dadaab"><span class="form-hint">Optional short identifier</span></div>
+          <div class="form-group"><label class="form-label" for="code">Code</label><input class="form-control" id="code" name="code" placeholder="e.g. dmo"><span class="form-hint">Optional short identifier (e.g. dmo, hag, ifo)</span></div>
+          <div class="form-group"><label class="form-label" for="description">Description</label><textarea class="form-control" id="description" name="description" rows="3" placeholder="Brief description of this camp"></textarea></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-close-modal="camp">Cancel</button>
